@@ -1,0 +1,47 @@
+services:
+
+  # Postgres para datos de usuarios
+
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: administrador
+      POSTGRES_PASSWORD: postgresPass
+      POSTGRES_DB: temufacebook_db
+    ports:
+      - "5410:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  # Neo4j
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j_db
+    restart: always
+    environment:
+      NEO4J_AUTH: neo4j/neo4jPass
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+
+
+    # MongoDB
+  mongo:
+    image: mongo:6
+    container_name: mongo_db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: administrador
+      MONGO_INITDB_ROOT_PASSWORD: mongoPass
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  mongo_data:
