@@ -13,7 +13,6 @@ public class PlaceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long placeId;
-
     private String name;
     private String address;
 

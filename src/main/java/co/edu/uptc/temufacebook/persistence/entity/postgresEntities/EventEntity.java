@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long eventId;
     private String name;
-    private LocalDateTime date;
+    private LocalDateTime dateEvent;
 
     @ManyToOne
-    private PlaceEntity place;
+    private PlaceEntity placeId;
 
     @Enumerated(EnumType.STRING)
     private Status status;
