@@ -13,6 +13,7 @@ services:
       - "5410:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
   # Neo4j
   neo4j:
     image: neo4j:5
