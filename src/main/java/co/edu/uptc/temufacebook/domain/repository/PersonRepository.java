@@ -1,14 +1,22 @@
 package co.edu.uptc.temufacebook.domain.repository;
 
-import co.edu.uptc.temufacebook.domain.dto.Person;
+import co.edu.uptc.temufacebook.domain.dto.PersonDTO;
+
+import java.util.List;
 
 public interface PersonRepository {
 
-    Person savePerson(Person person);
-    Person getById(int id);
-    Person getByName(String name);
+    PersonDTO savePerson(PersonDTO personDTO);
+
+    PersonDTO getById(int id);
+
+    PersonDTO getByName(String name);
+
+    List<PersonDTO> getAll();
+
     void deletePerson(int id);
-    Person updatePerson(Person person);
 
+    PersonDTO updatePerson(PersonDTO personDTO);
 
+    List<PersonDTO> getFriends(int personId);
 }

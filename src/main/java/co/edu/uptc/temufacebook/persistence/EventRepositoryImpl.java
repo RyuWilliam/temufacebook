@@ -1,81 +1,79 @@
 package co.edu.uptc.temufacebook.persistence;
 
-import co.edu.uptc.temufacebook.domain.dto.Event;
-import co.edu.uptc.temufacebook.domain.dto.Status;
+import co.edu.uptc.temufacebook.domain.dto.EventDTO;
 import co.edu.uptc.temufacebook.domain.repository.EventRepository;
-import co.edu.uptc.temufacebook.persistence.crudRepository.mongoRepositories.EventMongoRepository;
-import co.edu.uptc.temufacebook.persistence.crudRepository.neo4jRepositories.EventGraphRepository;
-import co.edu.uptc.temufacebook.persistence.entity.mongoEntities.EventDocument;
+import co.edu.uptc.temufacebook.persistence.crudRepository.neo4jRepositories.EventNeo4jRepository;
 import co.edu.uptc.temufacebook.persistence.entity.neo4jEntities.EventNode;
 import co.edu.uptc.temufacebook.persistence.mapper.EventMapper;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public class EventRepositoryImpl implements EventRepository {
 
-    private final EventMongoRepository mongoRepository;
-    private final EventGraphRepository neo4jRepository;
-    private final EventMapper mapper;
+    private final EventNeo4jRepository eventNeo4jRepository;
+    private final EventMapper eventMapper;
 
-    public EventRepositoryImpl(EventMongoRepository mongoRepository,
-                               EventGraphRepository neo4jRepository,
-                               EventMapper mapper) {
-        this.mongoRepository = mongoRepository;
-        this.neo4jRepository = neo4jRepository;
-        this.mapper = mapper;
+    public EventRepositoryImpl(EventNeo4jRepository eventNeo4jRepository, EventMapper eventMapper) {
+        this.eventNeo4jRepository = eventNeo4jRepository;
+        this.eventMapper = eventMapper;
     }
 
     @Override
-    public Event saveEvent(Event event) {
-        // Guardar datos en Mongo
-        EventDocument savedDoc = mongoRepository.save(mapper.toDocument(event));
-        // Guardar relaciones en Neo4j
-        EventNode savedNode = neo4jRepository.save(mapper.toNode(event));
-        // Retornar DTO (podemos tomarlo de Mongo como fuente principal)
-        return mapper.toDTO(savedNode);
+    public EventDTO saveEvent(EventDTO eventDTO) {
+        EventNode node = eventMapper.toNode(eventDTO);
+        EventNode saved = eventNeo4jRepository.save(node);
+        return eventMapper.toDTO(saved);
     }
 
     @Override
-    public Event getById(int id) {
-        // Primero buscamos en Mongo (datos básicos)
-        Optional<EventDocument> eventDoc = mongoRepository.findById(String.valueOf(id));
-        if (eventDoc.isPresent()) {
-            return mapper.toDTO(eventDoc.get());
-        }
-        // Si no está en Mongo, intentamos en Neo4j
-        Optional<EventNode> eventNode = neo4jRepository.findById((long)id);
-        return eventNode.map(mapper::toDTO).orElse(null);
+    public EventDTO getById(int id) {
+        EventNode node = eventNeo4jRepository.findById((long) id).orElse(null);
+        return eventMapper.toDTO(node);
     }
+
+    @Override
+    public List<EventDTO> getAll() {
+        return eventMapper.toDTOs(eventNeo4jRepository.findAll());
+    }
+
     @Override
     public void changeStatus(int id, Status status) {
-        Optional<EventDocument> eventDocOpt = mongoRepository.findById(String.valueOf(id));
-        eventDocOpt.ifPresent(doc -> {
-            doc.setStatus(status.name()); // 🔑 guardamos como String
-            mongoRepository.save(doc);
-        });
 
-        Optional<EventNode> eventNodeOpt = neo4jRepository.findById((long)id);
-        eventNodeOpt.ifPresent(node -> {
-            node.setStatus(status.name()); // idem en Neo4j si lo modelaste como String
-            neo4jRepository.save(node);
-        });
     }
-
-
 
     @Override
     public void deleteEvent(int id) {
-        mongoRepository.deleteById(String.valueOf(id));
-        neo4jRepository.deleteById((long)id);
+        eventNeo4jRepository.deleteById((long) id);
     }
 
     @Override
-    public Event updateEvent(Event event) {
-        // Básicamente un save que sobrescribe
-        EventDocument updatedDoc = mongoRepository.save(mapper.toDocument(event));
-        EventNode updatedNode = neo4jRepository.save(mapper.toNode(event));
-        return mapper.toDTO(updatedNode);
+    public EventDTO updateEvent(EventDTO eventDTO) {
+        if (eventDTO.getEventId() == null) return null;
+        EventNode existing = eventNeo4jRepository.findById(eventDTO.getEventId()).orElse(null);
+        if (existing == null) return null;
+
+        EventNode updatedNode = eventMapper.toNode(eventDTO);
+        updatedNode.setId(existing.getId());
+        EventNode saved = eventNeo4jRepository.save(updatedNode);
+        return eventMapper.toDTO(saved);
+    }
+
+    @Override
+    public List<EventDTO> getByStatus(Status status) {
+        return List.of();
+    }
+
+    public List<EventDTO> getAssociatedEvents(int eventId) {
+        List<EventNode> associated = eventNeo4jRepository.findAssociatedEventsById((long) eventId);
+        if (associated == null || associated.isEmpty()) return null;
+        return eventMapper.toDTOs(associated);
+    }
+
+    public List<EventDTO> getParticipants(int eventId) {
+        EventNode node = eventNeo4jRepository.findById((long) eventId).orElse(null);
+        if (node == null || node.getParticipants() == null || node.getParticipants().isEmpty()) return null;
+        return eventMapper.toDTOs(node.getAssociatedEvents()); // o mapear a participantes según corresponda
     }
 }

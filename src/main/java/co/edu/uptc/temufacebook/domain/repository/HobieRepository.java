@@ -1,11 +1,22 @@
 package co.edu.uptc.temufacebook.domain.repository;
 
-import co.edu.uptc.temufacebook.domain.dto.Hobie;
+import co.edu.uptc.temufacebook.domain.dto.HobieDTO;
+
+import java.util.List;
 
 public interface HobieRepository {
-    Hobie saveHobie(Hobie hobie);
-    Hobie getById(int id);
-    Hobie getByName(String name);
+
+    HobieDTO saveHobie(HobieDTO hobie);
+
+    HobieDTO getById(int id);
+
+    HobieDTO getByName(String name);
+
+    List<HobieDTO> getAll();
+
     void deleteHobie(int id);
-    Hobie updateHobie(Hobie hobie);
+
+    HobieDTO updateHobie(HobieDTO hobie);
+
+    List<HobieDTO> getByPerson(int personId);
 }

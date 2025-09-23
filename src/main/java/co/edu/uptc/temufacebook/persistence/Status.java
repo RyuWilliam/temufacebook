@@ -1,9 +1,9 @@
-package co.edu.uptc.temufacebook.domain.dto;
+package co.edu.uptc.temufacebook.persistence;
 
 public enum Status {
     CANCELLED,
     ONCOURSE,
-    PENDIENT,
+    PENDING,
     CONFIRMED,
     DONE
 }

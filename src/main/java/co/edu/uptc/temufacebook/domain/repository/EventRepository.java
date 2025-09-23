@@ -1,13 +1,27 @@
 package co.edu.uptc.temufacebook.domain.repository;
 
-import co.edu.uptc.temufacebook.domain.dto.Event;
-import co.edu.uptc.temufacebook.domain.dto.Status;
+import co.edu.uptc.temufacebook.domain.dto.EventDTO;
+import co.edu.uptc.temufacebook.persistence.Status;
+
+import java.util.List;
 
 public interface EventRepository {
-    Event saveEvent(Event event);
-    Event getById(int id);
+
+
+
+    EventDTO saveEvent(EventDTO event);
+
+    EventDTO getById(int id);
+
+    List<EventDTO> getAll();
+
     void changeStatus(int id, Status status);
+
     void deleteEvent(int id);
-    Event updateEvent(Event event);
+
+    EventDTO updateEvent(EventDTO event);
+
+    List<EventDTO> getByStatus(Status status);
+
 
 }

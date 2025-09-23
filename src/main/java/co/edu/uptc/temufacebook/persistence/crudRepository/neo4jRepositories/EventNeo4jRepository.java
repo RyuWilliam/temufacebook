@@ -5,6 +5,7 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 import java.util.List;
 
-public interface EventGraphRepository extends Neo4jRepository<EventNode, Long> {
-    List<EventNode> findByName(String name);
+public interface EventNeo4jRepository extends Neo4jRepository<EventNode, Long> {
+    EventNode findByName(String name);
+    List<EventNode> findAssociatedEventsById(long id);
 }

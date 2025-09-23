@@ -6,17 +6,18 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Entity
-@Table(name = "persons")
 @Getter
 @Setter
-public class PersonEntity {
+@Entity
+public class PlaceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer personId;
+    private Long placeId;
 
     private String name;
-    private String lastName;
-    private String phone;
+    private String address;
+
+    @OneToMany(mappedBy = "place")
+    private List<EventEntity> events;
 
 }

@@ -7,9 +7,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Hobie {
+public class HobieDTO {
     private Integer hobieId;
     private String name;
     private String description;
-    private List<Event> events;
+    private List<String> eventNames;
 }
