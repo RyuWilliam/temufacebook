@@ -8,8 +8,8 @@ import java.util.List;
 @Getter
 @Setter
 public class HobieDTO {
-    private Integer hobieId;
+    private Long hobieId;
     private String name;
     private String description;
-    private List<String> eventNames;
+    private List<EventDTO> relatedEvents;
 }
