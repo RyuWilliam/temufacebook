@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface EventRepository {
 
-
-
     EventDTO saveEvent(EventDTO event);
 
     EventDTO getById(int id);
