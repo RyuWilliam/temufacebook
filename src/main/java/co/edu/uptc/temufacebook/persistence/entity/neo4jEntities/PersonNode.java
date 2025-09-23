@@ -17,10 +17,4 @@ public class PersonNode {
 
     @Relationship(type = "FRIENDS_WITH")
     private List<PersonNode> friends;
-
-    @Relationship(type = "PARTICIPATES_IN")
-    private List<EventNode> events;
-
-    @Relationship(type= "LIKES")
-    private List<HobieNode> hobbies;
 }

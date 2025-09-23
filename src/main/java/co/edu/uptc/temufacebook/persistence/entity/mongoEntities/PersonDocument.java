@@ -17,7 +17,7 @@ public class PersonDocument {
     private Long personId;
     private String name;
     private String lastName;
-    private String phone;
+    private int phone;
     private List<EventDocument> events;
     private List<HobieDocument> hobbies;
     private List<PersonDocument> friends;

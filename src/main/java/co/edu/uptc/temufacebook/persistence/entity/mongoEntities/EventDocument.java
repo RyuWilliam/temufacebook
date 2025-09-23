@@ -18,7 +18,7 @@ public class EventDocument {
     @Id
     private Long eventId;
     private String name;
-    private LocalDateTime date;
+    private LocalDateTime dateEvent;
     private PlaceDocument place;
     private List<HobieDocument> hobbies;
     private List<PersonDocument> participants;
