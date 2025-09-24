@@ -6,5 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface EventPostgresRepository extends CrudRepository<EventEntity, Long> {
+    EventEntity findByName(String name);
     List<EventEntity> findByStatus(String status);
 }

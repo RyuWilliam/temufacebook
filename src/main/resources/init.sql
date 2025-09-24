@@ -24,7 +24,7 @@ CREATE TABLE Event(
     placeId INT references Place(placeId),
     name VARCHAR(50) not null,
     dateEvent TIMESTAMP,
-    status enum_status not null
+    status enum_status not null default 'PENDIENT'
 );
 
 CREATE TABLE Person_event(
