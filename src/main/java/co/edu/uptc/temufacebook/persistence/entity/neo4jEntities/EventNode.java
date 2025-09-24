@@ -13,7 +13,7 @@ public class EventNode {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long eventId;
 
     @Relationship(type = "ASSOCIATED_WITH")
     private List<EventNode> associatedEvents;
