@@ -27,11 +27,11 @@ public class EventEntity {
     private Status status;
 
     @ManyToMany
-    @JoinTable(name = "Event_Hobie")
+    @JoinTable(name = "Event_hobie")
     private List<HobieEntity> hobbies;
 
     @ManyToMany
-    @JoinTable(name = "Event_Person")
+    @JoinTable(name = "Person_event")
     private List<PersonEntity> participants;
 
 }

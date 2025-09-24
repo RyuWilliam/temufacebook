@@ -23,6 +23,6 @@ public class HobieEntity {
     private String description;
 
     @ManyToMany
-    @JoinTable(name = "Event_Hobie")
+    @JoinTable(name = "Event_hobie")
     private List<EventEntity> relatedEvents;
 }

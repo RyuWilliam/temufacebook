@@ -24,11 +24,11 @@ public class PersonEntity {
     private int phone;
 
     @ManyToMany
-    @JoinTable(name = "Person_Event")
+    @JoinTable(name = "Person_event")
     private List<EventEntity> events;
 
     @ManyToMany
-    @JoinTable(name = "Person_Hobie")
+    @JoinTable(name = "Person_hobie")
     private List<HobieEntity> hobbies;
 
 }
