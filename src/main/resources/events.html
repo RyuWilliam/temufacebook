@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gestión de Eventos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/styles.css">
+    <style>
+        .event-card {
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+        }
+        .event-card:hover {
+            transform: translateY(-2px);
+        }
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .participant-list {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .hobby-badge {
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlbUQLdCkNLnEXjJO4vWYG9zN45yxgJiMv3A&s"
+                 alt="logo" width="30" height="24">
+            Gestion eventos y personas
+        </a>
+
+        <div class="d-flex">
+            <div class="navbar-nav me-3">
+                <a class="nav-link text-light me-3" th:href="@{/persons}">
+                    <i class="fas fa-users"></i> Personas
+                </a>
+                <a class="nav-link text-warning me-3" th:href="@{/events}">
+                    <i class="fas fa-calendar"></i> Eventos
+                </a>
+            </div>
+
+            <form th:action="@{/events/search}" class="d-flex">
+                <input autofocus="autofocus" name="name" class="form-control me-2"
+                       type="search" placeholder="Buscar evento..." aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4 my-style-featured">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 th:text="${event.eventId != null ? 'Editar Evento' : 'Nuevo Evento'}">Nuevo Evento</h2>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearForm()">
+                        Limpiar Formulario
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form method="POST" th:action="@{/events}" th:object="${event}" id="eventForm">
+                        <input type="hidden" th:field="*{eventId}" id="eventId">
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label for="name">Nombre del Evento *</label>
+                                    <input type="text" class="form-control" th:field="*{name}"
+                                           id="name" placeholder="Nombre del evento" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="status">Estado *</label>
+                                    <select class="form-control" th:field="*{status}" id="status" required>
+                                        <option value="">-- Selecciona estado --</option>
+                                        <option value="ACTIVE">ACTIVO</option>
+                                        <option value="INACTIVE">INACTIVO</option>
+                                        <option value="CANCELLED">CANCELADO</option>
+                                        <option value="COMPLETED">COMPLETADO</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="dateEvent">Fecha y Hora del Evento *</label>
+                                    <input type="datetime-local" class="form-control" th:field="*{dateEvent}"
+                                           id="dateEvent" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="place">Lugar</label>
+                                    <select class="form-control" th:field="*{place.placeId}" id="place">
+                                        <option value="">-- Selecciona lugar --</option>
+                                        <option th:each="place : ${allPlaces}"
+                                                th:value="${place.placeId}"
+                                                th:text="${place.name + ' - ' + place.address}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="hobbies">Hobbies Relacionados</label>
+                                    <select multiple class="form-control" th:field="*{hobbies}" id="hobbies">
+                                        <option th:each="hobby : ${allHobbies}"
+                                                th:value="${hobby.hobieId}"
+                                                th:text="${hobby.name}">
+                                        </option>
+                                    </select>
+                                    <small class="form-text text-muted">Mantén Ctrl presionado para seleccionar múltiples</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="participants">Participantes</label>
+                                    <select multiple class="form-control" th:field="*{participants}" id="participants">
+                                        <option th:each="person : ${allPersons}"
+                                                th:value="${person.personId}"
+                                                th:text="${person.name + ' ' + person.lastName}">
+                                        </option>
+                                    </select>
+                                    <small class="form-text text-muted">Mantén Ctrl presionado para seleccionar múltiples</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary me-2" id="submitBtn">
+                                <span th:text="${event.eventId != null ? 'Actualizar Evento' : 'Crear Evento'}">Crear Evento</span>
+                            </button>
+                            <button type="reset" class="btn btn-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Lista de Eventos</h2>
+                <div>
+                    <span class="badge bg-info text-dark me-2">Total: <span th:text="${#lists.size(events)}">0</span></span>
+                    <a th:href="@{/persons}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-users"></i> Ver Personas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div th:each="event : ${events}" class="col-md-6 col-lg-4 mb-4">
+            <div class="card event-card h-100 position-relative">
+                <span th:class="'badge status-badge ' +
+                               (${event.status.name() == 'ACTIVE'} ? 'bg-success' :
+                                ${event.status.name() == 'CANCELLED'} ? 'bg-danger' :
+                                ${event.status.name() == 'COMPLETED'} ? 'bg-primary' : 'bg-secondary')"
+                      th:text="${event.status}">
+                </span>
+
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0" th:text="${event.name}"></h5>
+                    <small class="text-muted"
+                           th:text="${#temporals.format(event.dateEvent, 'dd/MM/yyyy HH:mm')}">
+                    </small>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-3" th:if="${event.place != null}">
+                        <strong>Lugar:</strong><br>
+                        <span th:text="${event.place.name}"></span><br>
+                        <small class="text-muted" th:text="${event.place.address}"></small>
+                    </div>
+
+                    <div class="mb-3" th:if="${event.hobbies != null and !#lists.isEmpty(event.hobbies)}">
+                        <strong>Hobbies:</strong><br>
+                        <span th:each="hobby : ${event.hobbies}"
+                              th:text="${hobby.name}"
+                              class="badge bg-success hobby-badge">
+                        </span>
+                    </div>
+
+                    <div th:if="${event.participants != null and !#lists.isEmpty(event.participants)}">
+                        <strong>Participantes:</strong>
+                        <span class="badge bg-info text-dark" th:text="${#lists.size(event.participants)}"></span>
+                        <div class="participant-list mt-2">
+                            <div th:each="participant : ${event.participants}" class="small text-muted">
+                                • <span th:text="${participant.name + ' ' + participant.lastName}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                th:onclick="'editEvent(' + ${event.eventId} + ')'">
+                            Editar
+                        </button>
+                        <a th:href="@{/events/{id}(id=${event.eventId})}"
+                           class="btn btn-outline-info btn-sm">
+                            Ver
+                        </a>
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                th:onclick="'deleteEvent(' + ${event.eventId} + ')'">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${events == null or #lists.isEmpty(events)}" class="text-center mt-5">
+        <div class="alert alert-info">
+            <h4>No hay eventos registrados</h4>
+            <p>Crea el primer evento usando el formulario de arriba.</p>
+            <a th:href="@{/persons}" class="btn btn-primary">
+                <i class="fas fa-users"></i> Ver Personas Primero
+            </a>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

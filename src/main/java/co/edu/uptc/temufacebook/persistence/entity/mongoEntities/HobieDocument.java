@@ -13,8 +13,8 @@ import java.util.List;
 public class HobieDocument {
 
     @Id
-    private String id;
+    private Long hobieId;
     private String name;
     private String description;
-    private List<Long> eventIds;
+    private List<EventDocument> relatedEvents;
 }
