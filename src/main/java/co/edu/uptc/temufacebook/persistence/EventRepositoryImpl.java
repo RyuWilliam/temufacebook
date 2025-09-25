@@ -32,12 +32,13 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public EventDTO saveEvent(EventDTO eventDTO) {
+        EventEntity entity = eventMapper.toEntity(eventDTO);
+        EventEntity savedEntity = eventPostgresRepository.save(entity);
+
         EventDocument document = eventMapper.toDocument(eventDTO);
+        document.setEventId(savedEntity.getEventId());
         EventDocument savedDocument = eventMongoRepository.save(document);
 
-        EventEntity entity = eventMapper.toEntity(eventDTO);
-        entity.setEventId(savedDocument.getEventId());
-        eventPostgresRepository.save(entity);
 
         EventNode node = eventMapper.toNode(eventDTO);
         node.setEventId(savedDocument.getEventId());

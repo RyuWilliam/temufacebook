@@ -32,16 +32,17 @@ public class PersonRepositoryImpl implements PersonRepository {
 
     @Override
     public PersonDTO savePerson(PersonDTO personDTO) {
+        PersonEntity entity = personMapper.toEntity(personDTO);
+        PersonEntity savedEntity = personPostgresRepository.save(entity);
+
+
         PersonDocument document = personMapper.toDocument(personDTO);
+        document.setPersonId(savedEntity.getPersonId());
         PersonDocument savedDocument = personMongoRepository.save(document);
 
         PersonNode node = personMapper.toNode(personDTO);
         node.setPersonId(savedDocument.getPersonId());
         personNeo4jRepository.save(node);
-
-        PersonEntity entity = personMapper.toEntity(personDTO);
-        entity.setPersonId(savedDocument.getPersonId());
-        personPostgresRepository.save(entity);
         return personMapper.fromDocument(savedDocument);
     }
 

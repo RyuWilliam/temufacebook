@@ -27,12 +27,13 @@ public class PlaceRepositoryImpl implements PlaceRepository {
 
     @Override
     public PlaceDTO savePlace(PlaceDTO PlaceDTO) {
+        PlaceEntity entity = placeMapper.toEntity(PlaceDTO);
+        PlaceEntity savedEntity = placePostgresRepository.save(entity); 
+
         PlaceDocument document = placeMapper.toDocument(PlaceDTO);
+        document.setPlaceId(savedEntity.getPlaceId());
         PlaceDocument savedDocument = placeMongoRepository.save(document);
 
-        PlaceEntity entity = placeMapper.toEntity(PlaceDTO);
-        entity.setPlaceId(savedDocument.getPlaceId());
-        placePostgresRepository.save(entity);
         return placeMapper.fromDocument(savedDocument);
     }
 
