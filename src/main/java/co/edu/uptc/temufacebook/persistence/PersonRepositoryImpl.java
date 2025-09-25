@@ -131,4 +131,50 @@ public class PersonRepositoryImpl implements PersonRepository {
         }
         return personMapper.fromDocuments(documents);
     }
+
+    @Override
+    public void addFriend(int personId, int friendId) {
+        try {
+        if (!personMongoRepository.existsById((long) personId)) {
+            throw new RuntimeException("Person with ID " + personId + " does not exist.");
+        }
+
+        if (!personMongoRepository.existsById((long) friendId)) {
+            throw new RuntimeException("Person with ID " + friendId + " does not exist.");
+        }
+        
+        if (personId == friendId) {
+            throw new RuntimeException("Una persona no puede ser amiga de sí misma.");
+        }
+        
+        if (areFriends(personId, friendId)) {
+            throw new RuntimeException("Persons with IDs " + personId + " and " + friendId + " are already friends.");
+        }
+        
+        PersonNode person = personNeo4jRepository.findByPersonId((long) personId);
+        PersonNode friend = personNeo4jRepository.findByPersonId((long) friendId);
+        
+        if (person != null && friend != null) {
+            personNeo4jRepository.createFriendRelation(person.getPersonId(), friend.getPersonId());
+            System.out.println("Friendship created between " + personId + " and " + friendId);
+        } else {
+            throw new RuntimeException("Could not find persons in Neo4j database.");
+        }
+        
+    } catch (Exception e) {
+        System.err.println("Error adding friend: " + e.getMessage());
+        throw new RuntimeException("Error creating friendship: " + e.getMessage());
+    }
+    }
+
+    private boolean areFriends(int personId, int friendId) {
+    try {
+        List<PersonNode> friends = personNeo4jRepository.findFriendsByPersonId((long) personId);
+        return friends.stream()
+                .anyMatch(friend -> friend.getPersonId().equals((long) friendId));
+    } catch (Exception e) {
+        System.err.println("Error checking friendship: " + e.getMessage());
+        return false;
+    }
+}
 }

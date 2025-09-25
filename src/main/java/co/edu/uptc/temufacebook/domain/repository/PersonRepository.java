@@ -19,4 +19,6 @@ public interface PersonRepository {
     PersonDTO updatePerson(PersonDTO personDTO);
 
     List<PersonDTO> getFriends(int personId);
+
+    void addFriend(int personId, int friendId);
 }

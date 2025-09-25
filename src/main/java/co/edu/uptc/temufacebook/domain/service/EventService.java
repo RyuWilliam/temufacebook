@@ -3,10 +3,12 @@ package co.edu.uptc.temufacebook.domain.service;
 import co.edu.uptc.temufacebook.domain.dto.EventDTO;
 import co.edu.uptc.temufacebook.domain.repository.EventRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class EventService {
 
     private final EventRepository eventRepository;

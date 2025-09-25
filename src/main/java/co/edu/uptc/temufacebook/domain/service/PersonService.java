@@ -3,10 +3,12 @@ package co.edu.uptc.temufacebook.domain.service;
 import co.edu.uptc.temufacebook.domain.dto.PersonDTO;
 import co.edu.uptc.temufacebook.domain.repository.PersonRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class PersonService {
 
     private final PersonRepository personRepository;
