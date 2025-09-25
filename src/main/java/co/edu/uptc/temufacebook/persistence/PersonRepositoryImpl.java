@@ -2,8 +2,12 @@ package co.edu.uptc.temufacebook.persistence;
 
 import co.edu.uptc.temufacebook.domain.dto.PersonDTO;
 import co.edu.uptc.temufacebook.domain.repository.PersonRepository;
+import co.edu.uptc.temufacebook.persistence.crudRepository.mongoRepositories.PersonMongoRepository;
 import co.edu.uptc.temufacebook.persistence.crudRepository.neo4jRepositories.PersonNeo4jRepository;
+import co.edu.uptc.temufacebook.persistence.crudRepository.postgresRepositories.PersonPostgresRepository;
+import co.edu.uptc.temufacebook.persistence.entity.mongoEntities.PersonDocument;
 import co.edu.uptc.temufacebook.persistence.entity.neo4jEntities.PersonNode;
+import co.edu.uptc.temufacebook.persistence.entity.postgresEntities.PersonEntity;
 import co.edu.uptc.temufacebook.persistence.mapper.PersonMapper;
 import org.springframework.stereotype.Repository;
 
@@ -13,54 +17,117 @@ import java.util.List;
 public class PersonRepositoryImpl implements PersonRepository {
 
     private final PersonNeo4jRepository personNeo4jRepository;
+    private final PersonPostgresRepository personPostgresRepository;
+    private final PersonMongoRepository personMongoRepository;
     private final PersonMapper personMapper;
 
-    public PersonRepositoryImpl(PersonNeo4jRepository personNeo4jRepository, PersonMapper personMapper) {
+    public PersonRepositoryImpl(PersonNeo4jRepository personNeo4jRepository,
+            PersonPostgresRepository personPostgresRepository, PersonMongoRepository personMongoRepository,
+            PersonMapper personMapper) {
         this.personNeo4jRepository = personNeo4jRepository;
+        this.personPostgresRepository = personPostgresRepository;
+        this.personMongoRepository = personMongoRepository;
         this.personMapper = personMapper;
     }
 
     @Override
     public PersonDTO savePerson(PersonDTO personDTO) {
+        PersonDocument document = personMapper.toDocument(personDTO);
+        PersonDocument savedDocument = personMongoRepository.save(document);
+
         PersonNode node = personMapper.toNode(personDTO);
-        PersonNode saved = personNeo4jRepository.save(node);
-        return personMapper.toDTO(saved);
+        node.setPersonId(savedDocument.getPersonId());
+        personNeo4jRepository.save(node);
+
+        PersonEntity entity = personMapper.toEntity(personDTO);
+        entity.setPersonId(savedDocument.getPersonId());
+        personPostgresRepository.save(entity);
+        return personMapper.fromDocument(savedDocument);
     }
 
     @Override
     public PersonDTO getById(int id) {
-        PersonNode node = personNeo4jRepository.findById((long)id).orElse(null);
-        return personMapper.toDTO(node);
+        PersonEntity entity = personPostgresRepository.findByPersonId((long) id);
+        if (entity == null) {
+            return null;
+        }
+        return personMapper.fromEntity(entity);
     }
 
     @Override
     public PersonDTO getByName(String name) {
-        return personMapper.toDTO(personNeo4jRepository.findByName(name));
+        PersonEntity entity = personPostgresRepository.findByName(name);
+        if (entity != null) {
+            return personMapper.fromEntity(entity);
+        }
+        return null;
     }
 
     @Override
     public List<PersonDTO> getAll() {
-        return personMapper.toDTOs(personNeo4jRepository.findAll());
+        List<PersonDocument> documents = personMongoRepository.findAll();
+        if (documents != null && !documents.isEmpty()) {
+            return personMapper.fromDocuments(documents);
+        }
+        return null;
     }
 
     @Override
     public void deletePerson(int id) {
-        personNeo4jRepository.deleteById((long)id);
+        Long personId = (long) id;
+
+        if (!personMongoRepository.existsById(personId)) {
+            throw new RuntimeException("Person with ID " + id + " does not exist.");
+        }
+
+        try {
+            PersonNode personNode = personNeo4jRepository.findByPersonId(personId);
+            if (personNode != null) {
+                personNeo4jRepository.delete(personNode);
+            }
+            personPostgresRepository.deleteByPersonId(personId);
+            personMongoRepository.deleteById(personId);
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting person with ID " + id + ": " + e.getMessage());
+        }
     }
 
-
-    //Implementar
     @Override
     public PersonDTO updatePerson(PersonDTO personDTO) {
+        if (personDTO != null && personDTO.getPersonId() != null) {
+            Long personId = personDTO.getPersonId();
+            if (personMongoRepository.existsById(personId)) {
+                PersonDocument document = personMapper.toDocument(personDTO);
+                PersonDocument updatedDocument = personMongoRepository.save(document);
+
+                PersonNode node = personMapper.toNode(personDTO);
+                node.setPersonId(updatedDocument.getPersonId());
+                personNeo4jRepository.save(node);
+
+                PersonEntity entity = personMapper.toEntity(personDTO);
+                entity.setPersonId(updatedDocument.getPersonId());
+                personPostgresRepository.save(entity);
+                return personMapper.fromDocument(updatedDocument);
+            } else {
+                throw new RuntimeException("Person with ID " + personId + " does not exist.");
+            }
+
+        }
         return null;
     }
 
     @Override
     public List<PersonDTO> getFriends(int personId) {
-        List<PersonNode> friends = personNeo4jRepository.findFriendsById((long) personId);
+        List<PersonNode> friends = personNeo4jRepository.findFriendsByPersonId((long) personId);
         if (friends == null || friends.isEmpty()) {
-            return null;
+            return List.of();
         }
-        return personMapper.toDTOs(friends);
+
+        List<Long> friendIds = friends.stream().map(PersonNode::getPersonId).toList();
+        List<PersonDocument> documents = personMongoRepository.findAllById(friendIds);
+        if (documents == null || documents.isEmpty()) {
+            return List.of();
+        }
+        return personMapper.fromDocuments(documents);
     }
 }

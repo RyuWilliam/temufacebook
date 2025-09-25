@@ -5,4 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface PlacePostgresRepository extends CrudRepository<PlaceEntity, Long> {
     PlaceEntity findByName(String name);
+    PlaceEntity findByPlaceId(long placeId);
 }

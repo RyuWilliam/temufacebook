@@ -15,15 +15,13 @@ public interface EventMapper {
     @Mapping(target = "associatedEvents", ignore = true) 
     EventNode toNode(EventDTO eventDTO);
 
-    List<EventNode> toNodes(List<EventDTO> events);
-
     @Mapping(target = "name", ignore = true)
-    @Mapping(target = "dateEvent", ignore = true)       
-    @Mapping(target = "place", ignore = true)           
-    @Mapping(target = "status", ignore = true)          
-    @Mapping(target = "participants", ignore = true)    
-    @Mapping(target = "events", ignore = true) 
-    @Mapping(target = "hobbies", ignore = true)         
+    @Mapping(target = "dateEvent", ignore = true)  
+    @Mapping(target = "place", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "participants", ignore = true)
+    @Mapping(target = "events", ignore = true)         
+    @Mapping(target = "hobbies", ignore = true)
     EventDTO fromNode(EventNode eventNode);
 
     List<EventDTO> fromNodes(List<EventNode> events);
@@ -36,9 +34,9 @@ public interface EventMapper {
 
     List<EventDocument> toDocuments(List<EventDTO> events);
 
-    @Mapping(target = "participants", ignore = true)     
-    @Mapping(target = "events", ignore = true) 
-    @Mapping(target = "hobbies", ignore = true)          
+    @Mapping(target = "participants", ignore = true)
+    @Mapping(target = "hobbies", ignore = true)
+    @Mapping(target = "events", ignore = true)
     EventDTO fromDocument(EventDocument eventDocument);
 
     List<EventDTO> fromDocuments(List<EventDocument> events);
@@ -50,9 +48,9 @@ public interface EventMapper {
 
     List<EventEntity> toEntities(List<EventDTO> events);
 
-    @Mapping(target = "participants", ignore = true)     
-    @Mapping(target = "events", ignore = true) 
-    @Mapping(target = "hobbies", ignore = true)          
+    @Mapping(target = "participants", ignore = true)
+    @Mapping(target = "hobbies", ignore = true)
+    @Mapping(target = "events", ignore = true)
     EventDTO fromEntity(EventEntity eventEntity);
 
     List<EventDTO> fromEntities(List<EventEntity> events);

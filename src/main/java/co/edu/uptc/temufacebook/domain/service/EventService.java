@@ -23,7 +23,6 @@ public class EventService {
         return eventRepository.getById(id);
     }
 
-
     public List<EventDTO> getAllEvents() {
         return eventRepository.getAll();
     }

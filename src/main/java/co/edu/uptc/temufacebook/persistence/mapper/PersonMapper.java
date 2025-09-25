@@ -14,7 +14,7 @@ public interface PersonMapper {
 
     // Neo4j Mappings (Solo IDs para relaciones)
     @Mapping(target = "friends", ignore = true) 
-    PersonNode toNode(PersonDTO dto);
+    PersonNode toNode(PersonDTO personDTO);
     
     List<PersonNode> toNodes(List<PersonDTO> persons);
 
@@ -22,38 +22,37 @@ public interface PersonMapper {
     @Mapping(target = "lastName", ignore = true)
     @Mapping(target = "phone", ignore = true)
     @Mapping(target = "events", ignore = true)  
-    @Mapping(target = "hobbies", ignore = true) 
-    @Mapping(target = "friends", ignore = true) 
-    PersonDTO fromNode(PersonNode node);
+    @Mapping(target = "hobbies", ignore = true)
+    PersonDTO fromNode(PersonNode personNode);
     
-    List<PersonDTO> fromNodes(List<PersonNode> nodeList);
+    List<PersonDTO> fromNodes(List<PersonNode> nodes);
 
     // MongoDB Mappings
     @Mapping(target = "friends", ignore = true) 
     @Mapping(target = "events", ignore = true)  
     @Mapping(target = "hobbies", ignore = true) 
-    PersonDocument toDocument(PersonDTO dto);
+    PersonDocument toDocument(PersonDTO personDTO);
     
     List<PersonDocument> toDocuments(List<PersonDTO> persons);
 
     @Mapping(target = "events", ignore = true)  
     @Mapping(target = "hobbies", ignore = true) 
     @Mapping(target = "friends", ignore = true) 
-    PersonDTO fromDocument(PersonDocument document);
+    PersonDTO fromDocument(PersonDocument personDocument);
     
     List<PersonDTO> fromDocuments(List<PersonDocument> documents);
 
     // PostgreSQL Mappings
     @Mapping(target = "events", ignore = true)  
     @Mapping(target = "hobbies", ignore = true) 
-    PersonEntity toEntity(PersonDTO dto);
+    PersonEntity toEntity(PersonDTO personDTO);
     
     List<PersonEntity> toEntities(List<PersonDTO> persons);
 
     @Mapping(target = "events", ignore = true)  
     @Mapping(target = "hobbies", ignore = true)
     @Mapping(target = "friends", ignore = true) 
-    PersonDTO fromEntity(PersonEntity entity);
+    PersonDTO fromEntity(PersonEntity personEntity);
     
     List<PersonDTO> fromEntities(List<PersonEntity> entities);
 

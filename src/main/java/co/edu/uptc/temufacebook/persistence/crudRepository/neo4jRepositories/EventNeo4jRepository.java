@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface EventNeo4jRepository extends Neo4jRepository<EventNode, Long> {
 
-    List<EventNode> findAssociatedEventsByEventId(long EventId);
+    EventNode findByEventId(long eventId);
+    List<EventNode> findAssociatedEventsByEventId(long eventId);
 }

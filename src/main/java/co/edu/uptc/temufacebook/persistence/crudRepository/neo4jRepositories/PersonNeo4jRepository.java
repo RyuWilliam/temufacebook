@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface PersonNeo4jRepository extends Neo4jRepository<PersonNode, Long> {
 
+    PersonNode findByPersonId(Long personId);
     List<PersonNode> findFriendsByPersonId(Long personId);
 }

@@ -8,4 +8,6 @@ import java.util.List;
 public interface EventPostgresRepository extends CrudRepository<EventEntity, Long> {
     EventEntity findByName(String name);
     List<EventEntity> findByStatus(String status);
+    EventEntity findByEventId(long eventId);
+    void deleteByEventId(long eventId);
 }
