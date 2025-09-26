@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalle de Persona</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlbUQLdCkNLnEXjJO4vWYG9zN45yxgJiMv3A&s"
+                 alt="logo" width="30" height="24">
+            Gestión eventos y personas
+        </a>
+
+        <div class="d-flex">
+            <div class="navbar-nav me-3">
+                <a class="nav-link text-warning me-3" th:href="@{/persons}">
+                    <i class="fas fa-users"></i> Personas
+                </a>
+                <a class="nav-link text-light me-3" th:href="@{/events}">
+                    <i class="fas fa-calendar"></i> Eventos
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card person-detail-card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-user-circle me-2"></i>
+                        <span th:text="${person.name + ' ' + person.lastName}"></span>
+                    </h2>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-section">
+                                <h5><i class="fas fa-info-circle text-primary"></i> Información Personal</h5>
+                                <p><strong>Nombre:</strong> <span th:text="${person.name}"></span></p>
+                                <p><strong>Apellido:</strong> <span th:text="${person.lastName}"></span></p>
+                                <p><strong>Teléfono:</strong> <span th:text="${person.phone}"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="info-section">
+                                <h5><i class="fas fa-heart text-success"></i> Hobbies</h5>
+                                <div th:if="${person.hobbies != null and !#lists.isEmpty(person.hobbies)}">
+                                    <span th:each="hobby : ${person.hobbies}"
+                                          th:text="${hobby.name}"
+                                          class="badge bg-success hobby-badge me-1 mb-1">
+                                    </span>
+                                </div>
+                                <div th:if="${person.hobbies == null or #lists.isEmpty(person.hobbies)}">
+                                    <p class="text-muted">No tiene hobbies registrados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-section">
+                                <h5><i class="fas fa-user-friends text-info"></i> Amigos 
+                                    <span class="badge bg-info text-dark" th:text="${person.friends != null ? #lists.size(person.friends) : 0}"></span>
+                                </h5>
+                                
+                                <div th:if="${person.friends != null and !#lists.isEmpty(person.friends)}">
+                                    <div class="friends-list">
+                                        <div th:each="friend : ${person.friends}" class="friend-item mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-circle fa-lg text-primary me-2"></i>
+                                                <div>
+                                                    <span th:text="${friend.name + ' ' + friend.lastName}"></span>
+                                                    <br>
+                                                    <small class="text-muted" th:text="${friend.phone}"></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div th:if="${person.friends == null or #lists.isEmpty(person.friends)}">
+                                    <p class="text-muted">No tiene amigos registrados</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="info-section">
+                                <h5><i class="fas fa-calendar-alt text-warning"></i> Eventos 
+                                    <span class="badge bg-warning text-dark" th:text="${person.events != null ? #lists.size(person.events) : 0}"></span>
+                                </h5>
+                                
+                                <div th:if="${person.events != null and !#lists.isEmpty(person.events)}">
+                                    <div class="events-list">
+                                        <div th:each="event : ${person.events}" class="event-item mb-2">
+                                            <div class="small-event-card">
+                                                <h6 class="mb-1" th:text="${event.name}"></h6>
+                                                <small class="text-muted" 
+                                                       th:text="${#temporals.format(event.dateEvent, 'dd/MM/yyyy HH:mm')}">
+                                                </small>
+                                                <span th:class="'badge badge-sm ms-2 ' +
+                                                               (${event.status.name() == 'ACTIVE'} ? 'bg-success' :
+                                                                ${event.status.name() == 'CANCELLED'} ? 'bg-danger' :
+                                                                ${event.status.name() == 'COMPLETED'} ? 'bg-primary' : 'bg-secondary')"
+                                                      th:text="${event.status}">
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div th:if="${person.events == null or #lists.isEmpty(person.events)}">
+                                    <p class="text-muted">No participa en eventos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/persons}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver a Personas
+                        </a>
+                        <div>
+                            <a th:href="@{/persons/{id}/friends(id=${person.personId})}" class="btn btn-info me-2">
+                                <i class="fas fa-user-friends"></i> Ver Amigos
+                            </a>
+                            <form method="POST" th:action="@{/persons/{id}(id=${person.personId})}" 
+                                  style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar esta persona?')">
+                                <input type="hidden" name="_method" value="delete">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

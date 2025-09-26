@@ -11,4 +11,5 @@ public class PlaceDTO {
     private Long placeId;
     private String name;
     private String address;
+    private String description;
 }

@@ -23,32 +23,32 @@ public class TestController {
     // ------------------------
     // PERSON ENDPOINTS
     // ------------------------
-    @PostMapping("/persons")
+    @PostMapping("/test/persons")
     public PersonDTO createPerson(@RequestBody PersonDTO personDTO) {
         return personService.createPerson(personDTO);
     }
 
-    @GetMapping("/persons/{id}")
+    @GetMapping("/test/persons/{id}")
     public PersonDTO getPersonById(@PathVariable int id) {
         return personService.getPersonById(id);
     }
 
-    @GetMapping("/persons/name/{name}")
+    @GetMapping("/test/persons/name/{name}")
     public PersonDTO getPersonByName(@PathVariable String name) {
         return personService.getPersonByName(name);
     }
 
-    @GetMapping("/persons")
+    @GetMapping("/test/persons")
     public List<PersonDTO> getAllPersons() {
         return personService.getAllPersons();
     }
 
-    @DeleteMapping("/persons/{id}")
+    @DeleteMapping("/test/persons/{id}")
     public void deletePerson(@PathVariable int id) {
         personService.deletePerson(id);
     }
 
-    @GetMapping("/persons/{id}/friends")
+    @GetMapping("/test/persons/{id}/friends")
     public List<PersonDTO> getFriends(@PathVariable int id) {
         return personService.getFriends(id);
     }
@@ -56,28 +56,28 @@ public class TestController {
     // ------------------------
     // EVENT ENDPOINTS
     // ------------------------
-    @PostMapping("/events")
+    @PostMapping("/test/events")
     public EventDTO createEvent(@RequestBody EventDTO eventDTO) {
         return eventService.createEvent(eventDTO);
     }
 
-    @GetMapping("/events/{id}")
+    @GetMapping("/test/events/{id}")
     public EventDTO getEventById(@PathVariable int id) {
         return eventService.getEventById(id);
     }
 
 
-    @GetMapping("/events")
+    @GetMapping("/test/events")
     public List<EventDTO> getAllEvents() {
         return eventService.getAllEvents();
     }
 
-    @DeleteMapping("/events/{id}")
+    @DeleteMapping("/test/events/{id}")
     public void deleteEvent(@PathVariable int id) {
         eventService.deleteEvent(id);
     }
 
-    @PutMapping("/events")
+    @PutMapping("/test/events")
     public EventDTO updateEvent(@RequestBody EventDTO eventDTO) {
         return eventService.updateEvent(eventDTO);
     }

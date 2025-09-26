@@ -7,9 +7,11 @@ import co.edu.uptc.temufacebook.persistence.crudRepository.postgresRepositories.
 import co.edu.uptc.temufacebook.persistence.entity.mongoEntities.HobieDocument;
 import co.edu.uptc.temufacebook.persistence.entity.postgresEntities.HobieEntity;
 import co.edu.uptc.temufacebook.persistence.mapper.HobieMapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class HobieRepositoryImpl implements HobieRepository {
 
     private final HobieMongoRepository hobieMongoRepository;
